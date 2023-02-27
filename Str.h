@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stddef.h>
 
 typedef struct {
     char *str;
@@ -29,6 +28,7 @@ void str_add(Str *dest, Str src)
     char *end = &dest->str[dest->len];
     strcpy(end, src.str);
 
+    dest->len = new_len;
     dest->str[new_len+1] = '\0';
 }
 
@@ -40,7 +40,22 @@ void str_cat(Str *dest, char *src)
     char *end = &dest->str[dest->len];
     strcpy(end, src);
 
+    dest->len = new_len;
     dest->str[new_len+1] = '\0';
+}
+
+ssize_t str_index(Str str, char *idx)
+{
+    size_t idxlen = strlen(idx);
+    for (int i = 0; i < str.len; i++)
+    {
+        for (int j = 0; j < idxlen; j++)
+        {
+            if (str.str[i] == idx[j])
+                return i;
+        }
+    }
+    return -1;
 }
 
 void str_destroy(Str *str)
