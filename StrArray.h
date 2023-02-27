@@ -26,7 +26,7 @@ StrArray stra_init(void)
 
 void stra_append(StrArray *arr, char *str)
 {
-    if (array->value == NULL) return;
+    if (arr->value == NULL) return;
     if (arr->pos == arr->size)
     {
         arr->size <<= 1;
