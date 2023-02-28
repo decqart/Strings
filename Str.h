@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <stdbool.h>
 
 typedef struct {
@@ -12,21 +13,27 @@ typedef struct {
 } Str;
 
 #define str_print(x) puts(x.str);
+#define strndup _strndup
+
+char *_strndup(const char *s, size_t n)
+{
+    char *dup = malloc((n+1)*sizeof(char));
+    strncpy(dup, s, n);
+    dup[n] = '\0';
+    return dup;
+}
 
 Str str_init(char *str)
 {
-    Str string;
-    string.str = strdup(str);
-    string.len = strlen(str);
-    return string;
+    size_t len = strlen(str);
+    char *new = strndup(str, len);
+    return (Str) { new, len };
 }
 
-Str str_init_with_len(char *str, size_t len)
+Str str_num_init(char *str, size_t len)
 {
-    Str string;
-    string.str = strdup(str);
-    string.len = len;
-    return string;
+    char *new = strndup(str, len);
+    return (Str) { new, len };
 }
 
 void str_add(Str *dest, Str src)
@@ -53,7 +60,19 @@ void str_cat(Str *dest, char *src)
     dest->str[new_len+1] = '\0';
 }
 
-ssize_t str_index(Str str, char *idx)
+Str str_substr(Str str, size_t start, size_t end)
+{
+    if (str.str == NULL)
+        return (Str) { NULL, 0 };
+
+    size_t len = end-start;
+    char *new = malloc((len+1)*sizeof(char));
+    char *sta = &str.str[start];
+    strncpy(new, sta, len);
+    return (Str) { new, len };
+}
+
+int32_t str_index(Str str, char *idx)
 {
     if (str.str == NULL) return -1;
     size_t idxlen = strlen(idx);
@@ -71,7 +90,7 @@ ssize_t str_index(Str str, char *idx)
 void str_reverse(Str *str)
 {
     if (str->str == NULL) return;
-    char *tmp = strdup(str->str);
+    char *tmp = strndup(str->str, str->len);
     if (tmp == NULL) return;
     for (int i = 0; i < str->len; i++)
     {
