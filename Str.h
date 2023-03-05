@@ -15,11 +15,22 @@ typedef struct {
 #define str_print(x) puts(x.str);
 #define strndup _strndup
 
+size_t _strnlen(const char *str, size_t maxlen)
+{
+    for (size_t len = 0; len < maxlen; ++len)
+    {
+        if (str[len] == '\0')
+            return len;
+    }
+    return maxlen;
+}
+
 char *_strndup(const char *s, size_t n)
 {
-    char *dup = malloc((n+1)*sizeof(char));
-    strncpy(dup, s, n);
-    dup[n] = '\0';
+    size_t minlen = _strnlen(s, n);
+    char *dup = malloc((minlen+1)*sizeof(char));
+    if (dup != NULL)
+        strncpy(dup, s, minlen+1);
     return dup;
 }
 
@@ -112,5 +123,7 @@ void str_destroy(Str *str)
     free(str->str);
     str->len = 0;
 }
+
+#undef strndup
 
 #endif /* STR_H */
