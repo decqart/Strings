@@ -12,6 +12,7 @@ typedef struct {
     size_t len;
 } Str;
 
+#define NULLSTR (Str) { NULL, 0 }
 #define str_print(x) puts(x.str);
 #define strndup _strndup
 
@@ -52,11 +53,30 @@ void str_add(Str *dest, Str src)
     if (dest->str == NULL) return;
     size_t new_len = dest->len+src.len;
     dest->str = realloc(dest->str, new_len+1);
+    if (dest->str == NULL) return;
     char *end = &dest->str[dest->len];
     strcpy(end, src.str);
 
     dest->len = new_len;
-    dest->str[new_len+1] = '\0';
+}
+
+void str_fmt_add(Str *dest, const char *format, ...)
+{
+    va_list vlist;
+    va_start(vlist, format);
+    int fmtlen = vsnprintf(NULL, 0, format, vlist);
+    va_end(vlist);
+
+    if (fmtlen < 0) fmtlen = 0;
+    size_t newlen = fmtlen+dest->len;
+    dest->str = realloc(dest->str, newlen+1);
+    if (dest->str == NULL) return;
+
+    va_start(vlist, format);
+    vsprintf(&dest->str[dest->len], format, vlist);
+    va_end(vlist);
+
+    dest->len = newlen;
 }
 
 void str_cat(Str *dest, char *src)
@@ -64,20 +84,21 @@ void str_cat(Str *dest, char *src)
     if (dest->str == NULL) return;
     size_t new_len = dest->len+strlen(src);
     dest->str = realloc(dest->str, new_len+1);
+    if (dest->str == NULL) return;
     char *end = &dest->str[dest->len];
     strcpy(end, src);
 
     dest->len = new_len;
-    dest->str[new_len+1] = '\0';
 }
 
 Str str_substr(Str str, size_t start, size_t end)
 {
-    if (str.str == NULL)
-        return (Str) { NULL, 0 };
-
     size_t len = end-start;
     char *new = malloc((len+1)*sizeof(char));
+
+    if (new == NULL || str.str == NULL)
+        return NULLSTR;
+
     char *sta = &str.str[start];
     strncpy(new, sta, len);
     return (Str) { new, len };
