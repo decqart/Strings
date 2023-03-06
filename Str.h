@@ -14,6 +14,21 @@ typedef struct {
 
 #define NULLSTR (Str) { NULL, 0 }
 #define str_print(x) puts(x.str);
+
+Str str_init(char *str);
+Str str_num_init(char *str, size_t len);
+void str_add(Str *dest, Str src);
+void str_fmt_add(Str *dest, const char *format, ...);
+void str_cat(Str *dest, char *src);
+Str str_substr(Str str, size_t start, size_t end);
+int32_t str_index(Str str, char *idx);
+void str_reverse(Str *str);
+bool str_eq(Str left, Str right);
+void str_destroy(Str *str);
+
+#endif /* STR_H */
+
+#ifdef STR_IMPLEMENTATION
 #define strndup _strndup
 
 size_t _strnlen(const char *str, size_t maxlen)
@@ -146,5 +161,4 @@ void str_destroy(Str *str)
 }
 
 #undef strndup
-
-#endif /* STR_H */
+#endif /* STR_IMPLEMENTATION */
