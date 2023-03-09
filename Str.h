@@ -25,6 +25,8 @@ Str str_substr(Str str, size_t start, size_t end);
 int32_t str_index(Str str, char *idx);
 void str_reverse(Str *str);
 bool str_eq(Str left, Str right);
+bool str_startswith(Str str, const char *prefix);
+bool str_endswith(Str str, const char *suffix);
 void str_destroy(Str *str);
 
 #endif /* STR_H */
