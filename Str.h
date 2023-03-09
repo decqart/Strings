@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdarg.h>
 
 typedef struct {
     char *str;
@@ -151,6 +152,31 @@ bool str_eq(Str left, Str right)
     if (left.str == NULL || right.str == NULL)
         return false;
     return !strcmp(left.str, right.str);
+}
+
+bool str_startswith(Str str, const char *prefix)
+{
+    int idx = 0;
+    while (prefix[idx])
+    {
+        if (str.str[idx] != prefix[idx])
+            return false;
+        idx++;
+    }
+    return true;
+}
+
+bool str_endswith(Str str, const char *suffix)
+{
+    int idx = 0;
+    size_t suflen = strlen(suffix);
+    while (suffix[idx])
+    {
+        if (str.str[str.len-suflen+idx] != suffix[idx])
+            return false;
+        idx++;
+    }
+    return true;
 }
 
 void str_destroy(Str *str)
